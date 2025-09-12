@@ -21,33 +21,9 @@ $(() => {
     $(this).val(val);
   });
 
-  // バリデーション
-  const input = document.getElementById('input');
-  const keikoku = document.getElementById('keikoku');
-
-  input.addEventListener('blur', () => {
-    const value = input.value.trim();
-    const is7digits = /^[0-9]{7}$/.test(value);
-    const submitBtn = document.getElementById('search');
-
-    // サニタイズとバリデーションが済んでいなければボタンが押せない処理
-    submitBtn.disabled = true;
-
-    if (is7digits) {
-      keikoku.textContent = '';
-      submitBtn.disabled = false;
-    } else {
-      keikoku.textContent = '７桁の数字を入れてください';
-    }
-  });
-
   //ボタンが押されたあとの処理
   const search = document.getElementById('search');
   search.addEventListener('click', async () => {
-
-    // タイムアウト用コントローラ
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     const api = 'https://zipcloud.ibsnet.co.jp/api/search?zipcode=';
     const error = document.getElementById('error');
@@ -56,6 +32,21 @@ $(() => {
     const param = input.value
     const url = api + param;
     document.querySelector('div').textContent = '';
+
+    // バリデーション
+    const value = input.value.trim();
+    const is7digits = /^[0-9]{7}$/.test(value);
+
+    if (is7digits) {
+      error.textContent = '';
+    } else {
+      error.textContent = '７桁の数字を入れてください';
+      return;
+    }
+
+    // タイムアウト用コントローラ
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try {
       const response = await fetch(url, { signal: controller.signal });
@@ -71,6 +62,7 @@ $(() => {
       showFocusReset()
 
       if (datas.status === 400) {
+        // バリデーション
         error.textContent = datas.message;
       } else if (datas.results === null) {
         error.textContent = '郵便番号から住所が見つかりませんでした。';
@@ -106,14 +98,14 @@ $(() => {
       }
     }
 
-  // ---------- 関数定義 ----------
-  //入力した数値の表示と、入力欄のフォーカスとリセットをする
-  function showFocusReset() {
-    provided.textContent = '〒' + param;
-    $(() => {
-      $input.focus().val('');
-    });
-  }
+    // ---------- 関数定義 ----------
+    //入力した数値の表示と、入力欄のフォーカスとリセットをする
+    function showFocusReset() {
+      provided.textContent = '〒' + param;
+      $(() => {
+        $input.focus().val('');
+      });
+    }
 
   }, false);
 
