@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>郵便番号</title>
+  <link rel="icon" href="data:,">
+  <style>
+    .user {
+      margin: 20px;
+      border: 2px, solid , #000000;
+      padding: 4px;
+    }
+
+    table {
+      width: 100%;         /* 幅をテーブルに合わせる */
+      border-collapse: collapse; /* セルの境界線を重ねて1本にする */
+    }
+
+    .result th {
+      background-color: #a110108c;
+      border: 2px, solid , #000;
+      text-align: center;
+    }
+
+    #addr tr {
+      margin: 20px;
+      border: 2px, solid , #000000;
+      padding: 4px;
+    }
+
+    #addr td {
+      border: 2px, solid , #000;
+      padding: 4px;
+      text-align: center;
+    }
+
+</style>
+</head>
+<body>
+  <div class="user">
+      <table>
+        <th>郵便番号</th>
+        <tbody>
+          <tr>
+            <td>
+              <input id="zipcode" type="text" value="" placeholder="例)8120012">
+              <button id="search" type="button">住所検索</button>
+              <button id="reset" type="button">リセット</button>
+              <p id="error"></p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+  <div>
+    <p class="nowzip"></p>
+    <table class="result">
+      <thead>
+      <tr>
+        <th>住所1</th>
+        <th>住所2</th>
+        <th>住所3</th>
+        <th>住所1カナ</th>
+        <th>住所2カナ</th>
+        <th>住所3カナ</th>
+        <th>pref code</th>
+        <th>zip code</th>
+      </tr>
+      </thead>
+      <tbody id="addr">
+      </tbody>
+    </table>
+    <p class="nowzip"></p>
+  </div>
+  <script src="./zipcode.js"></script>
+</body>
+<!-- https://zipcloud.ibsnet.co.jp/doc/api -->
+</html>
