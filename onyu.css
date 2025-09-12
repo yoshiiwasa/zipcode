@@ -1,13 +1,35 @@
-/* <p id="keikoku"></p>
-<p id="error"></p>
-<p id="zyuusyo"></p> */
-
-#keikoku {
-  color: red;
+body {
+  margin: 0px 16px;
+  padding: 0px;
 }
 
-#error {
-  color: rgb(40, 40, 70);
+section {
+  height: 80px;
+  max-width: 320px;
+
+  input {
+    margin: 0px;
+    max-width: 240px;
+  }
+
+  button {
+    margin: 0px;
+    width: 48px;
+  }
+
+  #keikoku {
+    margin: 0px;
+    color: rgb(243, 25, 25);
+  }
+
+  #error {
+    margin: 0px;
+    color: rgb(40, 40, 70);
+  }
+}
+
+ul {
+  margin: 16px;
 }
 
 li {

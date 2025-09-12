@@ -68,32 +68,31 @@ $(() => {
 
       error.textContent = '';
       const datas = await response.json();
+      showFocusReset()
 
       if (datas.status === 400) {
         error.textContent = datas.message;
       } else if (datas.results === null) {
         error.textContent = '郵便番号から住所が見つかりませんでした。';
-        showFocusReset()
       } else {
-        showFocusReset()
 
         //オブジェクトを配列に変換し、データをブラウザに表示する
         const datasEntries = Object.entries(datas);
         const iLength = datasEntries[1][1];
+        const mainItems = 6
 
         for (let i = 0; i < iLength.length; i++) {
           const datasDescendant = datasEntries[1][1][i]
           const datasDescendantEntries = Object.entries(datasDescendant);
           const container = document.getElementById('address-list');
           const ul = document.createElement('ul');
-          for (let j = 0; j < 6; j++) {
+          for (let j = 0; j < mainItems; j++) {
             const li = document.createElement('li');
             li.textContent = datasDescendantEntries[j][1];
             ul.appendChild(li);
           }
           container.appendChild(ul);
         }
-        clearTimeout(timeoutId);
       }
     }
 
@@ -107,14 +106,15 @@ $(() => {
       }
     }
 
-  //入力した数値の表示と、入力欄のフォーカスとリセットをする関数
+  }, false);
+
+  // ---------- 関数定義 ----------
+  //入力した数値の表示と、入力欄のフォーカスとリセットをする
   function showFocusReset() {
     provided.textContent = '〒' + param;
     $(() => {
       $input.focus().val('');
     });
   }
-
-  }, false);
 
 });

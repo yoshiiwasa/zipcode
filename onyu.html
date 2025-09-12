@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuusei</title>
+  <link rel="stylesheet" href="onyu.css">
+</head>
+
+<body>
+  <section>
+  郵便番号を入力してください<input id="input" class="zipcode" type="text" value="" placeholder="例:1234567">
+  <button id="search" type="button" disabled>検索</button>
+  <p id="keikoku"></p>
+  <p id="error"></p>
+  </section>
+  <p id="provided"></p>
+  <div id="address-list"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="onyu.js"></script>
+
+</body>
