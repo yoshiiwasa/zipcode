@@ -91,12 +91,35 @@ function setHtml(selector, arrAddreses)
 {
   let tr = {};
   let td = {};
+  let tmp = [];
+
   const dom = document.querySelector(selector);
   console.log(dom.className); 
   arrAddreses.forEach( (address) => {
     tr = document.createElement('tr');
     td = {};
+    tmp = [];
 
+    for (const key in address)
+    {
+      console.log(`${key} ${address[key]}`);
+      if (${key} !== 'zipcode')
+      {
+        tmp.push(`${address[key]}`);
+      }
+      else
+      {
+        tmp.unshift(`${address[key]}`);
+      }
+    }
+
+    tmp.forEach( (txt) => {
+      td = document.createElement('td');
+      td.textContent = txt;
+      tr.appendChild(td);
+    });
+
+/*
     for (const key in address)
     {
       console.log(`${key} ${address[key]}`);
@@ -104,6 +127,7 @@ function setHtml(selector, arrAddreses)
       td.textContent = address[key];
       tr.appendChild(td);
     }
+*/
 
     dom.appendChild(tr);
   } );
