@@ -1,0 +1,15 @@
+/* <p id="keikoku"></p>
+<p id="error"></p>
+<p id="zyuusyo"></p> */
+
+#keikoku {
+  color: red;
+}
+
+#error {
+  color: rgb(40, 40, 70);
+}
+
+li {
+  list-style: none;
+}
