@@ -103,7 +103,7 @@ function setHtml(selector, arrAddreses)
     for (const key in address)
     {
       console.log(`${key} ${address[key]}`);
-      if (${key} !== 'zipcode')
+      if (key !== 'zipcode')
       {
         tmp.push(`${address[key]}`);
       }
