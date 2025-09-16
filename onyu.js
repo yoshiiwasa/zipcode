@@ -60,24 +60,22 @@ $(() => {
       showFocusReset()
 
       if (datas.status === 400) {
-        // バリデーション
         error.textContent = datas.message;
       } else if (datas.results === null) {
         error.textContent = '郵便番号から住所が見つかりませんでした。';
       } else {
 
         //オブジェクトを配列に変換し、データをブラウザに表示する
-
         //mainItems = address1, address2, address3, kana1, kana2, kana3 の６つ
         const mainItems = 6;
 
         for (let i = 0; i < datas.results.length; i++) {
-          const datasEntries3 = Object.entries(datas.results[i]);
+          const datasEntries = Object.entries(datas.results[i]);
           const container = document.getElementById('address-list');
           const ul = document.createElement('ul');
           for (let j = 0; j < mainItems; j++) {
             const li = document.createElement('li');
-            li.textContent = datasEntries3[j][1];
+            li.textContent = datasEntries[j][1];
             ul.appendChild(li);
           }
           container.appendChild(ul);
