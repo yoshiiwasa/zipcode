@@ -91,6 +91,7 @@ function setHtml(selector, arrAddreses)
 {
   let tr = {};
   let td = {};
+
   const dom = document.querySelector(selector);
   console.log(dom.className); 
   arrAddreses.forEach( (address) => {
@@ -102,8 +103,36 @@ function setHtml(selector, arrAddreses)
       console.log(`${key} ${address[key]}`);
       td = document.createElement('td');
       td.textContent = address[key];
+
+      if (key !== 'zipcode')
+      {
+        tr.appendChild(td);
+      }
+      else
+      {
+        tr.prepend(td);
+      }
+    }
+
+/*
+    let tmp = [];
+    tmp = [];
+    tmp.forEach( (txt) => {
+      td = document.createElement('td');
+      td.textContent = txt;
+      tr.appendChild(td);
+    });
+*/
+
+/*
+    for (const key in address)
+    {
+      console.log(`${key} ${address[key]}`);
+      td = document.createElement('td');
+      td.textContent = address[key];
       tr.appendChild(td);
     }
+*/
 
     dom.appendChild(tr);
   } );
