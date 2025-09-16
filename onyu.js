@@ -1,24 +1,24 @@
 'use strict';
 
+//サイトを開いた時に入力欄にフォーカスされた状態にする
 $(() => {
-  const $input = $('input');
+  const $input = $('#input');
   $input.focus();
 
-  //サニタイズ
-  // 入力欄からblurしたタイミングで変換
-  $('#input').on('blur', function () {
-    let val = $(this).val();
+  // blurまたはEnterキー押下時にサニタイズを行う
+  $input.on('blur keydown', function (event) {
+    if (event.type === 'blur' || (event.type === 'keydown' && event.key === 'Enter')) {
+      const original = $(this).val();
+      const clean = sanitizeValue(original);
+      $(this).val(clean);
+    }
+  });
 
-    // 1. 全角数字を半角数字に変換
-    val = val.replace(/[０-９]/g, function (ch) {
-      return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
-    });
-
-    // 2. 全角空白(\u3000)、半角空白(\s)、ハイフン(-)、全角ハイフンを削除
-    val = val.replace(/[\u3000\s-－]/g, '');
-
-    // 変換後の値をセット
-    $(this).val(val);
+  // 入力欄でEnterキーが押されたら検索する
+  document.getElementById("input").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      document.getElementById("search").click();
+    }
   });
 
   //ボタンが押されたあとの処理
@@ -36,10 +36,9 @@ $(() => {
     // バリデーション
     const value = input.value.trim();
     const is7digits = /^[0-9]{7}$/.test(value);
+    error.textContent = '';
 
-    if (is7digits) {
-      error.textContent = '';
-    } else {
+    if (!is7digits) {
       error.textContent = '７桁の数字を入れてください';
       return;
     }
@@ -57,7 +56,6 @@ $(() => {
         throw new Error(response.statusText);
       }
 
-      error.textContent = '';
       const datas = await response.json();
       showFocusReset()
 
@@ -69,37 +67,35 @@ $(() => {
       } else {
 
         //オブジェクトを配列に変換し、データをブラウザに表示する
-        const datasEntries = Object.entries(datas);
-        const iLength = datasEntries[1][1];
-        const mainItems = 6
 
-        for (let i = 0; i < iLength.length; i++) {
-          const datasDescendant = datasEntries[1][1][i]
-          const datasDescendantEntries = Object.entries(datasDescendant);
+        //mainItems = address1, address2, address3, kana1, kana2, kana3 の６つ
+        const mainItems = 6;
+
+        for (let i = 0; i < datas.results.length; i++) {
+          const datasEntries3 = Object.entries(datas.results[i]);
           const container = document.getElementById('address-list');
           const ul = document.createElement('ul');
           for (let j = 0; j < mainItems; j++) {
             const li = document.createElement('li');
-            li.textContent = datasDescendantEntries[j][1];
+            li.textContent = datasEntries3[j][1];
             ul.appendChild(li);
           }
           container.appendChild(ul);
         }
       }
-    }
-
-    catch (ex) {
+    } catch (ex) {
       clearTimeout(timeoutId);
       if (ex.name === 'AbortError') {
         error.textContent = 'リクエストがタイムアウトしました';
-        controller.abort()
+        controller.abort() //fetchを止める
       } else {
+        error.textContent = '不明なエラー';
         console.log(ex);
       }
     }
 
     // ---------- 関数定義 ----------
-    //入力した数値の表示と、入力欄のフォーカスとリセットをする
+    //入力した数値の表示と、入力欄のフォーカスとリセットをする関数
     function showFocusReset() {
       provided.textContent = '〒' + param;
       $(() => {
@@ -108,5 +104,14 @@ $(() => {
     }
 
   }, false);
+
+  // サニタイズ関数
+  function sanitizeValue(input) {
+    let val = input.replace(/[０-９]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
+    );
+    val = val.replace(/[\u3000\s\-–−－]/g, '');
+    return val;
+  }
 
 });
