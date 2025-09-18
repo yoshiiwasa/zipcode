@@ -1,3 +1,4 @@
+
 body {
   margin: 0px 16px;
   padding: 0px;
@@ -5,12 +6,15 @@ body {
 
 section {
   height: 88px;
+  height: 88px;
   max-width: 320px;
+  position: relative;
   position: relative;
 
   input {
     margin: 0px;
     max-width: 240px;
+    
     
   }
 
@@ -31,6 +35,13 @@ section {
     background: rgba(255, 255, 255, 0.904);
     display: block;
     position: fixed;
+  #provided {
+    box-sizing: border-box;
+    padding: 2px 6px 2px 4px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.904);
+    display: block;
+    position: fixed;
   }
 }
 
@@ -40,4 +51,5 @@ ul {
 
 li {
   list-style: none;
+}
 }

@@ -1,112 +1,101 @@
 'use strict';
 
-$(() => {
-  const $input = $('input');
-  $input.focus();
+{
+  const search = document.getElementById('search');
+  const error = document.getElementById('error');
+  const provided = document.getElementById('provided');
+  const $zipcode = $('#zipcode');
+  const api = 'https://zipcloud.ibsnet.co.jp/api/search?zipcode=';
 
-  //サニタイズ
-  // 入力欄からblurしたタイミングで変換
-  $('#input').on('blur', function () {
-    let val = $(this).val();
+  //サイトを開いた時に入力欄にフォーカスされた状態にする
+  $(() => {
+    $zipcode.focus();
+  });
 
-    // 1. 全角数字を半角数字に変換
-    val = val.replace(/[０-９]/g, function (ch) {
-      return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
-    });
+  // blurまたはEnterキー押下時にサニタイズを行う
+  $zipcode.on('blur keydown', function (event) {
+    if (event.type === 'blur' || event.key === 'Enter') {
+      const clean = sanitizeValue($(this).val());
+      $(this).val(clean);
+    }
+  });
 
-    // 2. 全角空白(\u3000)、半角空白(\s)、ハイフン(-)、全角ハイフンを削除
-    val = val.replace(/[\u3000\s-－]/g, '');
-
-    // 変換後の値をセット
-    $(this).val(val);
+  // 入力欄でEnterキーが押されたら検索する
+  document.getElementById("zipcode").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      document.getElementById("search").click();
+    }
   });
 
   //ボタンが押されたあとの処理
-  const search = document.getElementById('search');
   search.addEventListener('click', async () => {
-
-    const api = 'https://zipcloud.ibsnet.co.jp/api/search?zipcode=';
-    const error = document.getElementById('error');
-    const provided = document.getElementById('provided');
-    const input = document.getElementById('input');
-    const param = input.value
-    const url = api + param;
-    document.querySelector('div').textContent = '';
+    error.textContent = '';
+    provided.textContent = '';
+    document.querySelector('#address-list').textContent = '';
 
     // バリデーション
-    const value = input.value.trim();
-    const is7digits = /^[0-9]{7}$/.test(value);
-
-    if (is7digits) {
-      error.textContent = '';
-    } else {
+    const zipcodeInput = zipcode.value;
+    const is7digits = /^[0-9]{7}$/.test(zipcodeInput);
+    if (!is7digits) {
       error.textContent = '７桁の数字を入れてください';
       return;
     }
 
-    // タイムアウト用コントローラ
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
-
     try {
-      const response = await fetch(url, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        error.textContent = `HTTPエラー: ${response.status}`;
-        throw new Error(response.statusText);
-      }
-
-      error.textContent = '';
+      const response = await fetch(api + zipcodeInput, { signal: AbortSignal.timeout(10000) });
       const datas = await response.json();
-      showFocusReset()
+      showFocusReset(zipcodeInput)
 
-      if (datas.status === 400) {
-        // バリデーション
-        error.textContent = datas.message;
-      } else if (datas.results === null) {
+      if (datas.results === null) {
         error.textContent = '郵便番号から住所が見つかりませんでした。';
       } else {
-
-        //オブジェクトを配列に変換し、データをブラウザに表示する
-        const datasEntries = Object.entries(datas);
-        const iLength = datasEntries[1][1];
-        const mainItems = 6
-
-        for (let i = 0; i < iLength.length; i++) {
-          const datasDescendant = datasEntries[1][1][i]
-          const datasDescendantEntries = Object.entries(datasDescendant);
-          const container = document.getElementById('address-list');
-          const ul = document.createElement('ul');
-          for (let j = 0; j < mainItems; j++) {
-            const li = document.createElement('li');
-            li.textContent = datasDescendantEntries[j][1];
-            ul.appendChild(li);
-          }
-          container.appendChild(ul);
-        }
+        //検索が成功したとき、結果を表示する
+        showResult(datas.results)
       }
-    }
 
-    catch (ex) {
-      clearTimeout(timeoutId);
-      if (ex.name === 'AbortError') {
-        error.textContent = 'リクエストがタイムアウトしました';
-        controller.abort()
+    } catch (ex) {
+      if (ex.name === 'TimeoutError') {
+        error.textContent = 'リクエストがタイムアウトしました。';
       } else {
+        error.textContent = `エラー : ${ex.message}`;
         console.log(ex);
       }
     }
 
-    // ---------- 関数定義 ----------
-    //入力した数値の表示と、入力欄のフォーカスとリセットをする
-    function showFocusReset() {
-      provided.textContent = '〒' + param;
-      $(() => {
-        $input.focus().val('');
-      });
-    }
-
   }, false);
 
-});
+  // ---------- 関数定義 ----------
+  //入力した数値の表示と、入力欄のフォーカスとリセットをする関数
+  function showFocusReset(zipcode) {
+    provided.textContent = '〒' + zipcode;
+    $(() => {
+      $zipcode.focus().val('');
+    });
+  }
+
+  //オブジェクトを配列に変換し、データをブラウザに表示する関数
+  function showResult(datasResults) {
+    //mainItems = address1, address2, address3, kana1, kana2, kana3 の６つ
+    const mainItems = 6;
+    for (let i = 0; i < datasResults.length; i++) {
+      const datasEntries = Object.entries(datasResults[i]);
+      const container = document.getElementById('address-list');
+      const ul = document.createElement('ul');
+      for (let j = 0; j < mainItems; j++) {
+        const li = document.createElement('li');
+        li.textContent = datasEntries[j][1];
+        ul.appendChild(li);
+      }
+      container.appendChild(ul);
+    }
+  }
+
+  // サニタイズ関数
+  function sanitizeValue(zipcode) {
+    let val = zipcode.replace(/[０-９]/g, ch =>
+      String.fromCharCode(ch.charCodeAt(0) - 0xFEE0)
+    );
+    val = val.replace(/[\u3000\s\-–−－]/g, '');
+    return val;
+  }
+}
