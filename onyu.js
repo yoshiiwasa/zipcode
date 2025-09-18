@@ -56,9 +56,10 @@
     } catch (ex) {
       if (ex.name === 'TimeoutError') {
         error.textContent = 'リクエストがタイムアウトしました。';
+      } else {
+        error.textContent = `エラー : ${ex.message}`;
+        console.log(ex);
       }
-      error.textContent = `エラー : ${ex.message}`;
-      console.log(ex);
     }
 
   }, false);
