@@ -44,25 +44,24 @@
     try {
       const response = await fetch(api + zipcodeInput, { signal: AbortSignal.timeout(10000) });
       const datas = await response.json();
-      showFocusReset(zipcodeInput)
+      showFocusReset(zipcodeInput);
 
       if (datas.results === null) {
         error.textContent = '郵便番号から住所が見つかりませんでした。';
       } else {
         //検索が成功したとき、結果を表示する
-        showResult(datas.results)
+        showResult(datas.results);
       }
 
     } catch (ex) {
       if (ex.name === 'TimeoutError') {
-        error.textContent = 'リクエストがタイムアウトしました。';
-      } else {
-        error.textContent = `エラー : ${ex.message}`;
-        console.log(ex);
-      }
+        console.log('リクエストがタイムアウトしました。');
+      } 
+      error.textContent = `エラー : ${ex.message}`;
+      console.log(ex);
     }
-
-  }, false);
+    
+}, false);
 
   // ---------- 関数定義 ----------
   //入力した数値の表示と、入力欄のフォーカスとリセットをする関数
