@@ -52,7 +52,14 @@ search.addEventListener('click', async () => {
     {
       //zipcode表示
       editContents(nowzip, `郵便番号 : ${param}`);
-      setHtml('#addr', zipData.results);
+	  if (zipData.results == null)
+	  {
+          error.textContent = '郵便番号から住所が見つかりませんでした。';
+	  }
+	  else
+	  {
+          setHtml('#addr', zipData.results);
+	  }
     }
     else
     {
