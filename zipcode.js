@@ -79,7 +79,7 @@ async function execSearch()
     }
     else
     {
-      error.textContent = '郵便番号から住所が見つかりませんでした。';
+      error.textContent = 'API呼び出しエラーが起きました。';
     }
   }
   catch (ex)
