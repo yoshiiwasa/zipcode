@@ -14,7 +14,24 @@ reset.addEventListener('click', () => {
 });
 
 // addEventListener(event type: ex. 'click', callback関数: ()=> {}, option: default = false)
-search.addEventListener('click', async () => {
+search.addEventListener('click', () => {
+  execSearch();
+}, false);
+
+
+// 入力後、Enterを押したときにも反応する処理
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    execSearch();
+  }
+});
+
+
+// ---------- 関数定義 -------------------
+
+
+async function execSearch()
+{
   // 郵便番号API endpoint
   const url = 'https://zipcloud.ibsnet.co.jp/api/search?zipcode=';
 
@@ -42,7 +59,6 @@ search.addEventListener('click', async () => {
     return;
   }
 
-
   try
   {
     const response = await fetch(url + param, { signal: AbortSignal.timeout(10000) } );
@@ -63,7 +79,7 @@ search.addEventListener('click', async () => {
     }
     else
     {
-      error.textContent = '郵便番号から住所が見つかりませんでした。';
+      error.textContent = 'API呼び出しエラーが起きました。';
     }
   }
   catch (ex)
@@ -75,10 +91,7 @@ search.addEventListener('click', async () => {
     console.log(ex.name);
     error.textContent = `エラーが発生しました: ${ex.message}`;
   }
-
-}, false);
-
-// ---------- 関数定義 -------------------
+}
 
 /** 
  * classなどで指定された複数の要素の内容を書き換える　
